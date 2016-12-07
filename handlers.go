@@ -1,13 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"io"
 	"encoding/json"
-	//"fmt"
-	//"io/ioutil"
-	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 )
 
 type textToSpeechHandler struct {
@@ -25,12 +22,11 @@ func (h *textToSpeechHandler) convertToSpeech(w http.ResponseWriter, req *http.R
 	params, _ := decodeJSON(dec)
 
 	resp, err := h.service.convertToSpeech(params)
-	fmt.Println(resp)
-	if (err != nil) {
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	w.Header().Add("Content-Type", "application/mpeg")
-	streamBytes, err := ioutil.ReadAll(resp.AudioStream)
+	streamBytes, _ := ioutil.ReadAll(resp.AudioStream)
 	w.Write(streamBytes)
 }
 

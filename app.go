@@ -1,13 +1,13 @@
 package main
 
 import (
-	"os"
-	"github.com/jawher/mow.cli"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/gorilla/mux"
 	log "github.com/Sirupsen/logrus"
-	"net/http"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/jawher/mow.cli"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -48,7 +48,7 @@ func main() {
 		m.HandleFunc("/convert", h.convertToSpeech).Methods("PUT")
 
 		log.Infof("Listening on [%v]", *port)
-		http.ListenAndServe(":" + *port, nil)
+		http.ListenAndServe(":"+*port, nil)
 	}
 	app.Run(os.Args)
 
