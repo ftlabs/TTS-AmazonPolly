@@ -37,14 +37,12 @@ type textToSpeechService interface {
 }
 
 type textToSpeechServiceImpl struct {
-	apiKey 	   string
-	contentUrl url.URL
 	awsCreds   credentials.Credentials
 	token      string
 }
 
-func newTextToSpeechService(apiKey string, contentUrl url.URL, awsCreds credentials.Credentials, token string) (textToSpeechService) {
-	return &textToSpeechServiceImpl{apiKey: apiKey, contentUrl: contentUrl, awsCreds: awsCreds, token: token}
+func newTextToSpeechService(awsCreds credentials.Credentials, token string) (textToSpeechService) {
+	return &textToSpeechServiceImpl{awsCreds: awsCreds, token: token}
 }
 
 func (tts *textToSpeechServiceImpl) convertToSpeech(thing interface{}) (*polly.SynthesizeSpeechOutput, error) {

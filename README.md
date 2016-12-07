@@ -10,7 +10,9 @@ VoiceId: one of the Amazon Polly Voices
 * choose from `http://docs.aws.amazon.com/polly/latest/dg/API_SynthesizeSpeech.html`
 Token: Authorization token
 
-
 Example:
 `curl -X PUT --data "{\"Body\":\"HelloWorld\",\"VoiceId\":\"Geraint\",\"Token\":\"MyToken\"}" localhost:8080/convert`  
-    
+
+## Credentials
+
+Can be found in ftlabs lastpass

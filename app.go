@@ -6,30 +6,23 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/gorilla/mux"
 	log "github.com/Sirupsen/logrus"
-	"net/url"
 	"net/http"
 	"github.com/gorilla/handlers"
 )
 
 func main() {
 	app := cli.App("text-to-speech", "A RESTful API for interracting with Amazon Polly, Text to Speech")
-	apiKey := app.String(cli.StringOpt{
-		Name:   "apiKey",
+	accessId := app.String(cli.StringOpt{
+		Name:   "aws-access-id",
 		Value:  "",
-		Desc:   "Api Key for Capi v2 auth",
-		EnvVar: "API_KEY",
+		Desc:   "Aws ccess id",
+		EnvVar: "AWS_ACCESS_ID",
 	})
-	contentAddr := app.String(cli.StringOpt{
-		Name:   "contentAddr",
+	accessKey := app.String(cli.StringOpt{
+		Name:   "aws-access-key",
 		Value:  "",
-		Desc:   "Address to get content from Capi V2",
-		EnvVar: "CONTENT_ADDR",
-	})
-	awsCredsFile := app.String(cli.StringOpt{
-		Name:   "awsCreds",
-		Value:  "",
-		Desc:   "File which contains credentials for accessing Polly",
-		EnvVar: "CREDS_FILE",
+		Desc:   "Aws ccess key",
+		EnvVar: "AWS_ACCESS_KEY",
 	})
 	userToken := app.String(cli.StringOpt{
 		Name:   "userToken",
@@ -45,13 +38,9 @@ func main() {
 	})
 
 	app.Action = func() {
-		creds := credentials.NewSharedCredentials(*awsCredsFile, "default")
-		contentUrl, err := url.Parse(*contentAddr)
-		if err != nil {
-			log.Fatalf("Invalid content URL: %v (%v)", *contentAddr, err)
-		}
+		creds := credentials.NewStaticCredentials(*accessId, *accessKey, "")
 
-		s := newTextToSpeechService(*apiKey, *contentUrl, *creds, *userToken)
+		s := newTextToSpeechService(*creds, *userToken)
 		h := newTextToSpeechHandler(s)
 
 		m := mux.NewRouter()
