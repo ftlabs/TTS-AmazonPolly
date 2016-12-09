@@ -7,10 +7,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/polly"
+	"net/http"
 )
 
 type textToSpeechService interface {
-	convertToSpeech(thing interface{}) (*polly.SynthesizeSpeechOutput, error)
+	convertToSpeech(thing interface{}) (*polly.SynthesizeSpeechOutput, error, int)
 }
 
 type textToSpeechServiceImpl struct {
@@ -22,20 +23,20 @@ func newTextToSpeechService(awsCreds credentials.Credentials, token string) text
 	return &textToSpeechServiceImpl{awsCreds: awsCreds, token: token}
 }
 
-func (tts *textToSpeechServiceImpl) convertToSpeech(thing interface{}) (*polly.SynthesizeSpeechOutput, error) {
+func (tts *textToSpeechServiceImpl) convertToSpeech(thing interface{}) (*polly.SynthesizeSpeechOutput, error, int) {
 	input := thing.(request)
 
 	if tts.token != input.Token {
-		return &polly.SynthesizeSpeechOutput{}, errors.New("Token " + input.Token + " is invalid!")
+		return &polly.SynthesizeSpeechOutput{}, errors.New("Token " + input.Token + " is invalid!"), http.StatusUnauthorized
 	}
 
 	if len(input.Body) == 0 || input.Body == "" {
-		return &polly.SynthesizeSpeechOutput{}, errors.New("Unable to process input text:" + input.Body)
+		return &polly.SynthesizeSpeechOutput{}, errors.New("Unable to process input text:" + input.Body), http.StatusBadRequest
 	}
 
 	sess, err := session.NewSession()
 	if err != nil {
-		return &polly.SynthesizeSpeechOutput{}, fmt.Errorf("Failed to create session", err)
+		return &polly.SynthesizeSpeechOutput{}, fmt.Errorf("Failed to create session", err), http.StatusInternalServerError
 	}
 
 	pollyService := polly.New(sess, &aws.Config{Region: aws.String("eu-west-1"), Credentials: &tts.awsCreds})
@@ -49,7 +50,7 @@ func (tts *textToSpeechServiceImpl) convertToSpeech(thing interface{}) (*polly.S
 	ssiResp, err := pollyService.SynthesizeSpeech(params)
 
 	if err != nil {
-		return &polly.SynthesizeSpeechOutput{}, fmt.Errorf("Unable to access Amazon Polly %v", err)
+		return &polly.SynthesizeSpeechOutput{}, fmt.Errorf("Unable to access Amazon Polly %v", err), http.StatusInternalServerError
 	}
-	return ssiResp, nil
+	return ssiResp, nil, http.StatusOK
 }
