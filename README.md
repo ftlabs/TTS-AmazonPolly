@@ -34,6 +34,6 @@ Can be found in ftlabs lastpass
 ## deploying to heroku (a reminder)
 
 * If you have made changes to any dependencies (added, or updated)
-   * install and run godep
+   * install and run godep (see https://github.com/tools/godep)
    * commit the changes
 * Push to heroku.
