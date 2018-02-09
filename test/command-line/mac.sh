@@ -7,7 +7,7 @@
 
 # Make sure your instance of the TTS service is running,
 # and ensure LOCAL_SERVER references it.
-# If you don't use the local server, make sure the TOKEN value in the JSON files is correct
+# Make sure the TOKEN value in the JSON files is correct for whichever server you use.
 
 LOCAL_SERVER=localhost:8080
 
