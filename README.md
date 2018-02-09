@@ -31,6 +31,13 @@ Can be found in ftlabs lastpass
 * actually, since we are not auto-parsing the .env file, manually export all the env vars
 * run the executable: $GOPATH/bin/TTS-AmazonPolly
 
+## testing
+
+* start your local server
+* cd test/command-line
+* ./mac.sh (if you are on a mac, or tweak it if on a different OS)
+* listen to the TTS
+
 ## deploying to heroku (a reminder)
 
 * If you have made changes to any dependencies (added, or updated)
