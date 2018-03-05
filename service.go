@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/polly"
 	"net/http"
+	"strings"
 )
 
 type textToSpeechService interface {
@@ -41,10 +42,20 @@ func (tts *textToSpeechServiceImpl) convertToSpeech(thing interface{}) (*polly.S
 
 	pollyService := polly.New(sess, &aws.Config{Region: aws.String("eu-west-1"), Credentials: &tts.awsCreds})
 
+	// Simple check for the text starting with <speak>,
+	// from which we infer whether it should be treated as SSML (or plain text, by default).
+	// N.B., once in ssml mode, broken syntax will cause the TTS to fail, e.g. with no closing </speak>.
+	textType := "text"
+	trimmedText := strings.TrimSpace(input.Body)
+	if strings.HasPrefix(trimmedText, "<speak>") {
+		textType = "ssml"
+	}
+
 	params := &polly.SynthesizeSpeechInput{
 		OutputFormat: aws.String("mp3"),
 		Text:         aws.String(input.Body),
 		VoiceId:      aws.String(input.VoiceId),
+		TextType:     aws.String(textType),
 	}
 
 	ssiResp, err := pollyService.SynthesizeSpeech(params)
